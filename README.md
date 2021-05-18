@@ -8,7 +8,7 @@ them in this way is not really fast. *ctfcred* is designed to allow fast, organi
 simple access to *CTF* credentials. Credentials are stored as plaintext in a ``.yml``
 file and are accesses via *rofi*.
 
-**Do not use this tool to store real sensitive data!**.
+**Do not use this tool to store real sensitive data!**
 
 
 ### Table of Contents
@@ -86,15 +86,15 @@ view:
 
 Within *rofi*, *ctfcred* defines several keybindings for performing actions with the stored credentials.
 
-* ``Ctrl+C`:    Copy Username
-* ``Ctrl+c`:    Copy Password
-* ``Ctrl+o`:    Copy OTP Value
-* ``Ctrl+l`:    Copy URL Value
-* ``Ctrl+D`:    Copy Domain
-* ``Ctrl+F`:    Copy User with Domain
-* ``Ctrl+X`:    Delete Credential
-* ``Ctrl+K`:    Move Credential one Up
-* ``Ctrl+J`:    Move Credential one Down
+* ``Ctrl+C``:    Copy Username
+* ``Ctrl+c``:    Copy Password
+* ``Ctrl+o``:    Copy OTP Value
+* ``Ctrl+l``:    Copy URL Value
+* ``Ctrl+D``:    Copy Domain
+* ``Ctrl+F``:    Copy User with Domain
+* ``Ctrl+X``:    Delete Credential
+* ``Ctrl+K``:    Move Credential one Up
+* ``Ctrl+J``:    Move Credential one Down
 
 
 ### Updating and Cloning Credentials
