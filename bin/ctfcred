@@ -1,0 +1,226 @@
+#!/usr/bin/env python3
+
+import sys
+import secrets
+import ctfcred
+import argparse
+
+from pathlib import Path
+from argparse import RawDescriptionHelpFormatter
+
+
+fr = argparse.FileType('r')
+
+parser = argparse.ArgumentParser(description='''Simple credential manager for CTFs. Credentials are stored as plain text
+within the file system. This credential manager should not be used for
+real sensitive data. Do not use it as your password manager.\n\n''' +
+ctfcred.Config.key_bindings(), formatter_class=RawDescriptionHelpFormatter)
+
+parser.add_argument('username', nargs='?', help='username to store')
+parser.add_argument('password', nargs='?', help='password to store')
+parser.add_argument('note', nargs='?', help='note on the credential')
+parser.add_argument('--alias', help='alias for displaying username')
+parser.add_argument('--basic', action='store_true', help='export credentials in basic auth format')
+parser.add_argument('--clean', action='store_true', help='clear the credentials file')
+parser.add_argument('--clone', action='store_true', help='clone the selected credential')
+parser.add_argument('--debug', action='store_true', help='disable exception handling')
+parser.add_argument('--default-domain', dest='default_domain', help='set the default domain to use')
+parser.add_argument('--default-url', dest='default_url', help='set the default url to use')
+parser.add_argument('--domain', help='user domain')
+parser.add_argument('--domains', dest='e_domain', action='store_true', help='export stored domain names')
+parser.add_argument('--gen', action='store_const', const=secrets.token_urlsafe(12), help='automatically generae a password')
+parser.add_argument('--passwords', dest='e_pass', action='store_true', help='export stored passwords')
+parser.add_argument('--urls', dest='e_url', action='store_true', help='export stored urls')
+parser.add_argument('--users', dest='e_user', action='store_true', help='export stored usernames')
+parser.add_argument('--users-domain', dest='e_udomain', action='store_true', help='export usernames with domain prefix')
+parser.add_argument('--users-pass', dest='e_upass', action='store_true', help='export usernames with passwords')
+parser.add_argument('--users-pass-domain', dest='e_upassd', action='store_true', help='export usernames with passwords & domain')
+parser.add_argument('--import-pass', dest='i_pass', type=fr, help='import passwords from file')
+parser.add_argument('--import-user', dest='i_user', type=fr, help='import usernames from file')
+parser.add_argument('--import-user-domain', dest='i_udomain', type=fr, help='import usernames with domain from file')
+parser.add_argument('--import-user-pass', dest='i_upass', type=fr, help='import usernames with passwords from file')
+parser.add_argument('--import-user-pass-domain', dest='i_upassd', type=fr, help='import usernames with passwords & domain')
+parser.add_argument('--mix', action='store_true', help='mix user-pass combinations during export')
+parser.add_argument('--otp', help='otp base32 secret')
+parser.add_argument('--remove-imports', dest='ri', action='store_true', help='remove all imported credentials')
+parser.add_argument('--sep', default=':', help='separator for user-pass exports')
+parser.add_argument('--update', action='store_true', help='update a user instead of creating one')
+parser.add_argument('--url', help='related URL')
+
+
+def set_defaults(args):
+    '''
+    Checks whether --default-url or --default-domain was specified
+    and sets the corresponding configuration options.
+
+    Parameters:
+        args        Arguments parsed by argparse
+
+    Returns:
+        None
+    '''
+    if args.default_url:
+        ctfcred.Config.default_url = args.default_url
+
+    if args.default_domain:
+        ctfcred.Config.default_domain = args.default_domain
+
+    credentials = ctfcred.Credential.from_file()
+    credentials = ctfcred.Credential.to_file(credentials)
+
+
+def handle_export(args):
+    '''
+    Checks which kind of export was requested and exports the corresponding
+    information.
+
+    Parameters:
+        args        Arguments parsed by argparse
+
+    Returns:
+        None
+    '''
+    credentials = ctfcred.Credential.from_file()
+
+    if args.e_user:
+        ctfcred.Credential.export_usernames(credentials)
+
+    elif args.e_pass:
+        ctfcred.Credential.export_passwords(credentials)
+
+    elif args.e_domain:
+        ctfcred.Credential.export_domains(credentials)
+
+    elif args.e_udomain:
+        ctfcred.Credential.export_user_domain(credentials)
+
+    elif args.e_url:
+        ctfcred.Credential.export_urls(credentials)
+
+    elif args.e_upass:
+        ctfcred.Credential.export_user_pass(credentials, args.sep, args.mix, False, args.basic)
+
+    elif args.e_upassd:
+        ctfcred.Credential.export_user_pass(credentials, args.sep, args.mix, True, args.basic)
+
+
+def handle_import(args):
+    '''
+    Checks which kind of import was requested and imports the corresponding
+    information.
+
+    Parameters:
+        args        Arguments parsed by argparse
+
+    Returns:
+        None
+    '''
+    import_cred = set()
+    credentials = ctfcred.Credential.from_file()
+
+    if args.i_user:
+        args.i_user.close()
+        import_cred = ctfcred.Credential.import_usernames(Path(args.i_user.name), False)
+
+    elif args.i_udomain:
+        args.i_udomain.close()
+        import_cred = ctfcred.Credential.import_usernames(Path(args.i_pass.name), True)
+
+    elif args.i_pass:
+        args.i_pass.close()
+        import_cred = ctfcred.Credential.import_passwords(Path(args.i_pass.name))
+
+    elif args.i_upass:
+        args.i_upass.close()
+        import_cred = ctfcred.Credential.import_userpass(Path(args.i_upass.name), args.sep, False)
+
+    elif args.i_upassd:
+        args.i_upassd.close()
+        import_cred = ctfcred.Credential.import_userpass(Path(args.i_upassd.name), args.sep, True)
+
+    credentials = credentials.union(import_cred)
+    ctfcred.Credential.to_file(credentials)
+
+
+def main():
+    '''
+    Parses the supplied command line arguments and invokes the corresponding actions.
+
+    Parameters:
+        None
+
+    Returns:
+        None
+    '''
+    args = parser.parse_args()
+
+    if args.default_url or args.default_domain:
+        set_defaults(args)
+        sys.exit(0)
+
+    if args.clean:
+        ctfcred.Config.write_cred_file({})
+        sys.exit(0)
+
+    if args.e_user or args.e_pass or args.e_domain or args.e_url or args.e_udomain or args.e_upass or args.e_upassd:
+        handle_export(args)
+        sys.exit(0)
+
+    if args.ri:
+        credentials = ctfcred.Credential.filter_imports()
+        ctfcred.Credential.to_file(credentials)
+        sys.exit(0)
+
+    if args.i_user or args.i_pass or args.i_udomain or args.i_upass or args.i_upassd:
+        handle_import(args)
+        sys.exit(0)
+
+    credentials = ctfcred.Credential.from_file()
+
+    if args.update:
+
+        code, selected = ctfcred.Launcher.start_rofi(credentials, 'Update Credential')
+
+        password = args.gen or args.password
+        selected.update(args.username, password, args.note, args.url, args.otp, args.domain, args.alias)
+        ctfcred.Credential.to_file(credentials)
+
+    elif args.clone:
+
+        code, selected = ctfcred.Launcher.start_rofi(credentials, 'Clone Credential')
+
+        password = args.gen or args.password
+        cloned = selected.clone(args.username, password, args.note, args.url, args.otp, args.domain, args.alias)
+        credentials.add(cloned)
+
+        ctfcred.Credential.to_file(credentials)
+
+    elif args.username:
+
+        password = args.gen or args.password
+        cred = ctfcred.Credential(args.username, password, args.note, args.url, args.otp, args.domain, 0, alias=args.alias)
+        credentials.add(cred)
+        ctfcred.Credential.to_file(credentials)
+        sys.exit(0)
+
+    try:
+        credentials = ctfcred.Credential.from_file()
+        code, selected = ctfcred.Launcher.start_rofi(credentials)
+        ctfcred.Launcher.handle_exit(code, selected, credentials)
+        sys.exit(0)
+
+    except ctfcred.credential.MissingCredentialAttribute as e:
+        print('[-] Error: Malformed credential file.')
+        print(f'[-]\t The {e} attribute is missing on one credential.')
+
+    except Exception as e:
+
+        if args.debug:
+            raise e
+
+        else:
+            print('[-] Exception was thrown: ' + str(e))
+            sys.exit(1)
+
+
+main()

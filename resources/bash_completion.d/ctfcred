@@ -1,0 +1,63 @@
+#!/bin/bash
+
+type _comp_filter &> /dev/null || return
+type _comp_contains &> /dev/null || return
+
+function _ctfcred() {
+
+    local cur prev words opts arg args gadgets value_options file_options
+    _init_completion || return
+
+    file_options="--import-pass --import-user --import-user-domain --import-user-pass --import-user-pass-domain"
+    value_options="${file_options} --default-domain --default-url --domain --otp --sep --url"
+
+    _count_args "" "@(${value_options// /|})"
+    COMPREPLY=()
+
+	# filename completions
+	if _comp_contains "${file_options}" $prev; then
+        _filedir
+		return 0
+
+    # other value options have no guessable completion
+	elif _comp_contains "${value_options}" $prev; then
+		return 0
+
+	# otherwise, complete options
+	else 
+        opts="--alias"
+        opts="${opts} --basic"
+        opts="${opts} --clean"
+        opts="${opts} --clone"
+        opts="${opts} --debug"
+        opts="${opts} --default-domain"
+        opts="${opts} --default-url"
+        opts="${opts} --domain"
+        opts="${opts} --domains"
+        opts="${opts} --gen"
+        opts="${opts} --passwords"
+        opts="${opts} --urls"
+        opts="${opts} --users"
+        opts="${opts} --users-domain"
+        opts="${opts} --users-pass"
+        opts="${opts} --users-pass-domain"
+        opts="${opts} --import-pass"
+        opts="${opts} --import-user"
+        opts="${opts} --import-user-domain"
+        opts="${opts} --import-user-pass"
+        opts="${opts} --import-user-pass-domain"
+        opts="${opts} --mix"
+        opts="${opts} --otp"
+        opts="${opts} --remove-imports"
+        opts="${opts} --sep"
+        opts="${opts} --update"
+        opts="${opts} --url"
+	fi
+
+    _comp_filter "opts"
+
+	mapfile -t COMPREPLY < <(compgen -W "${opts}" -- "${cur}") 
+	return 0
+}
+
+complete -F _ctfcred ctfcred
