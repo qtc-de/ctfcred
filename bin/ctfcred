@@ -152,6 +152,7 @@ def main():
     Returns:
         None
     '''
+    ctfcred.Config.check_external_dependencies()
     args = parser.parse_args()
 
     if args.default_url or args.default_domain:
