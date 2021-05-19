@@ -24,10 +24,12 @@ class Config:
     checks for available helper programs on the machine.
     '''
     notify_send = True
+    browser = True
 
     move_up = 'Ctrl+K'
     copy_otp = 'Ctrl+o'
     copy_url = 'Ctrl+l'
+    open_url = 'Ctrl+L'
     move_down = 'Ctrl+J'
     copy_domain = 'Ctrl+D'
     copy_username = 'Ctrl+C'
@@ -44,7 +46,8 @@ class Config:
                     '-kb-custom-6', copy_domain,
                     '-kb-custom-7', copy_user_domain,
                     '-kb-custom-8', move_up,
-                    '-kb-custom-9', move_down
+                    '-kb-custom-9', move_down,
+                    '-kb-custom-10', open_url
                    ]
 
     url_sep = 30
@@ -70,6 +73,9 @@ class Config:
 
         if not shutil.which('notify-send'):
             Config.notify_send = False
+
+        if not shutil.which('xdg-open'):
+            Config.browser = False
 
     def parse_cred_file() -> dict:
         '''
@@ -132,10 +138,11 @@ class Config:
         return_str += f'  {Config.copy_password}\t\tCopy Password\n'
         return_str += f'  {Config.copy_otp}\t\tCopy OTP Value\n'
         return_str += f'  {Config.copy_url}\t\tCopy URL Value\n'
+        return_str += f'  {Config.open_url}\t\tOpen URL\n'
         return_str += f'  {Config.copy_domain}\t\tCopy Domain\n'
         return_str += f'  {Config.copy_user_domain}\t\tCopy User with Domain\n'
         return_str += f'  {Config.delete_credential}\t\tDelete Credential\n'
         return_str += f'  {Config.move_up}\t\tMove Credential one Up\n'
-        return_str += f'  {Config.move_down}\t\tMove Credential one Down\n'
+        return_str += f'  {Config.move_down}\t\tMove Credential one Down\n\n'
 
         return return_str

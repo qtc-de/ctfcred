@@ -121,6 +121,21 @@ class Launcher:
         else:
             Launcher.copy_wrapper(cred.username)
 
+    def open_url(cred: Credential) -> None:
+        '''
+        Open the url specified within the credential with the defaultn browser.
+
+        Parameters:
+            cred        Credential containing the desired URL
+
+        Returns:
+            None
+        '''
+        if not Config.browser or not cred.url:
+            return
+
+        subprocess.call(['xdg-open', cred.url])
+
     def start_rofi(credentials: set[Credential], prompt: str = 'Select Credential') -> tuple[int, Credential]:
         '''
         Takes a set of credential objects and displays them within rofi. Retruns the selected
@@ -176,6 +191,9 @@ class Launcher:
 
             status, selected = Launcher.start_rofi(creds)
             Launcher.handle_exit(status, selected, creds)
+
+        elif code == 19:
+            Launcher.open_url(cred)
 
         else:
             raise RofiException(f'rofi returned unexpected return code: {code}.')
