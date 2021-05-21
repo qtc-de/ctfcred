@@ -57,7 +57,7 @@ class Launcher:
             Launcher.notify_send(otp)
 
         else:
-            Launcher.notify_send(None)
+            Launcher.copy_wrapper(None)
 
     def copy_wrapper(item: str) -> None:
         '''
