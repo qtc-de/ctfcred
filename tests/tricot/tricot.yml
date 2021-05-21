@@ -1,0 +1,9 @@
+tester:
+  name: ctfcred_launcher
+  title: 'ctfcred Test Launcher'
+  error_mode: break
+  description: >
+    'Launches some simple tests for ctfcred'
+
+testers:
+  - ./testers/*

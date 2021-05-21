@@ -1,0 +1,169 @@
+tester:
+  name: otp
+  title: otp ctfcred Test
+  description: >
+    'Test some OTP related ctfcred stuff.'
+
+
+plugins:
+  - os_command:
+      cmd:
+        - /bin/sh
+        - -c
+        - 'ctfcred timmy password123 "This is timmy" --otp thisisanotpsecret &&
+           ctfcred timmy password123 "This is timmy" --otp thisisanotpsecret --alias test &&
+           ctfcred timmy password123 "This is timmy" &&
+           ctfcred tony  password123 "This is tony" --otp thisistoniesotpsecret'
+  - cleanup_command:
+      cmd:
+        - ctfcred
+        - --clean
+
+
+tests:
+  - title: Validate YAML
+    description: >
+      'Checks the ctfcred.yml file for the expected entries.'
+
+    command:
+      - cat
+      - /home/pentester/.ctfcred.yml
+
+    validators:
+      - error: False
+      - count:
+          values:
+            - 'alias: null'
+            - 'custom_note: true'
+            - 'custom_note: false'
+            - 'domain: null'
+            - 'otp: null'
+            - 'otp: thisis'
+            - 'username: timmy'
+            - 'password: password123'
+            - 'default_domain: null'
+            - 'default_url: null'
+          counts:
+            - 3
+            - 3
+            - 0
+            - 4
+            - 1
+            - 2
+            - 2
+            - 3
+            - 1
+            - 1
+
+
+  - title: Validate User Export
+    description: >
+      'Checks whether the user export gives the expected result'
+
+    command:
+      - ctfcred
+      - --users
+
+    validators:
+      - error: False
+      - line_count:
+          count: 2
+      - count:
+          values:
+            - timmy
+            - tony
+          counts:
+            - 1
+            - 1
+
+
+  - title: Validate Domain Export
+    description: >
+      'Checks whether the domain export gives the expected result'
+
+    command:
+      - ctfcred
+      - --domains
+
+    validators:
+      - error: False
+      - line_count:
+          count: 0
+
+
+  - title: Validate URL Export
+    description: >
+      'Checks whether the URL export gives the expected result'
+
+    command:
+      - ctfcred
+      - --urls
+
+    validators:
+      - error: False
+      - line_count:
+          count: 0
+
+
+  - title: Validate user-pass Export
+    description: >
+      'Checks whether the user-pass export gives the expected result'
+
+    command:
+      - ctfcred
+      - --users-pass
+
+    validators:
+      - error: False
+      - line_count:
+          count: 2
+      - count:
+          values:
+            - 'timmy:password123'
+            - 'tony:password123'
+          counts:
+            - 1
+            - 1
+
+
+  - title: Validate user-pass-domain Export
+    description: >
+      'Checks whether the user-pass-domain export gives the expected result'
+
+    command:
+      - ctfcred
+      - --users-pass-domain
+
+    validators:
+      - error: False
+      - line_count:
+          count: 2
+      - count:
+          values:
+            - 'timmy:password123'
+            - 'tony:password123'
+          counts:
+            - 1
+            - 1
+
+
+  - title: Validate user-pass-domain Export (Mix)
+    description: >
+      'Checks whether the mixed user-pass-domain export gives the expected result'
+
+    command:
+      - ctfcred
+      - --users-pass-domain
+      - --mix
+
+    validators:
+      - error: False
+      - line_count:
+          count: 2
+      - count:
+          values:
+            - 'timmy:password123'
+            - 'tony:password123'
+          counts:
+            - 1
+            - 1

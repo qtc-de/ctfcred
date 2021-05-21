@@ -1,0 +1,203 @@
+tester:
+  name: basic
+  title: basic ctfcred Test
+  description: >
+    'Tests the core functionality of ctfcred. Adds credentials with username, password
+    and a note and checks whether they are stored and exported correctly.'
+
+
+plugins:
+  - os_command:
+      cmd:
+        - /bin/sh
+        - -c
+        - 'ctfcred timmy password123 "This is timmy" &&
+          ctfcred timmy password123 "This is timmy" &&
+          ctfcred timmy password123 "This is timmy" &&
+          ctfcred timmy password1234 &&
+          ctfcred timmy password123 "This is timmy3" &&
+          ctfcred tony myPassword "This is tony" &&
+          ctfcred jane "" "No password" &&
+          ctfcred "" s3cr3t "Found in config file"'
+  - cleanup_command:
+      cmd:
+        - ctfcred
+        - --clean
+
+
+tests:
+  - title: Validate YAML
+    description: >
+      'Checks the ctfcred.yml file for the expected entries.'
+
+    command:
+      - cat
+      - /home/pentester/.ctfcred.yml
+
+    validators:
+      - error: False
+      - count:
+          values:
+            - 'alias: null'
+            - 'custom_note: true'
+            - 'custom_note: false'
+            - 'domain: null'
+            - 'otp: null'
+            - 'username: timmy'
+            - 'password: password'
+            - 'password: null'
+            - 'default_domain: null'
+            - 'default_url: null'
+          counts:
+            - 6
+            - 5
+            - 1
+            - 7
+            - 6
+            - 3
+            - 3
+            - 1
+            - 1
+            - 1
+      - regex:
+          match:
+            - 'note: \d{4}-\d{2}-\d{2}'
+
+
+  - title: Validate User Export
+    description: >
+      'Checks whether the user export gives the expected result'
+
+    command:
+      - ctfcred
+      - --users
+
+    validators:
+      - error: False
+      - line_count:
+          count: 3
+      - count:
+          values:
+            - jane
+            - timmy
+            - tony
+          counts:
+            - 1
+            - 1
+            - 1
+
+
+  - title: Validate Domain Export
+    description: >
+      'Checks whether the domain export gives the expected result'
+
+    command:
+      - ctfcred
+      - --domains
+
+    validators:
+      - error: False
+      - line_count:
+          count: 0
+
+
+  - title: Validate URL Export
+    description: >
+      'Checks whether the URL export gives the expected result'
+
+    command:
+      - ctfcred
+      - --urls
+
+    validators:
+      - error: False
+      - line_count:
+          count: 0
+
+
+  - title: Validate user-pass Export
+    description: >
+      'Checks whether the user-pass export gives the expected result'
+
+    command:
+      - ctfcred
+      - --users-pass
+
+    validators:
+      - error: False
+      - line_count:
+          count: 3
+      - count:
+          values:
+            - 'timmy:password123'
+            - 'timmy:password1234'
+            - 'tony:myPassword'
+          counts:
+            - 2
+            - 1
+            - 1
+
+
+  - title: Validate user-pass-domain Export
+    description: >
+      'Checks whether the user-pass-domain export gives the expected result'
+
+    command:
+      - ctfcred
+      - --users-pass-domain
+
+    validators:
+      - error: False
+      - line_count:
+          count: 3
+      - count:
+          values:
+            - 'timmy:password123'
+            - 'timmy:password1234'
+            - 'tony:myPassword'
+          counts:
+            - 2
+            - 1
+            - 1
+
+
+  - title: Validate user-pass-domain Export (Mix)
+    description: >
+      'Checks whether the mixed user-pass-domain export gives the expected result'
+
+    command:
+      - ctfcred
+      - --users-pass-domain
+      - --mix
+
+    validators:
+      - error: False
+      - line_count:
+          count: 12
+      - count:
+          values:
+            - 'jane:myPassword'
+            - 'jane:password123'
+            - 'jane:password1234'
+            - 'jane:s3cr3t'
+            - 'timmy:myPassword'
+            - 'timmy:password123'
+            - 'timmy:password1234'
+            - 'timmy:s3cr3t'
+            - 'tony:myPassword'
+            - 'tony:password123'
+            - 'tony:password1234'
+            - 'tony:s3cr3t'
+          counts:
+            - 1
+            - 2
+            - 1
+            - 1
+            - 1
+            - 2
+            - 1
+            - 1
+            - 1
+            - 2
+            - 1
+            - 1

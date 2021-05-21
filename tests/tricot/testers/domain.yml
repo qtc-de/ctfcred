@@ -1,0 +1,217 @@
+tester:
+  name: domain
+  title: domain ctfcred Test
+  description: >
+    'Test some domain related ctfcred stuff'
+
+
+plugins:
+  - os_command:
+      cmd:
+        - /bin/sh
+        - -c
+        - 'ctfcred timmy password123 "This is timmy" --domain example.com &&
+          ctfcred timmy password123 "This is timmy"  --domain example.org &&
+          ctfcred timmy password123 "This is timmy" &&
+          ctfcred tony myPassword "This is tony" --domain thisisreallyalongdomainname.com &&
+          ctfcred jane "" "No password" --alias helmut &&
+          ctfcred "" s3cr3t "Found in config file" --domain example.com &&
+          ctfcred --default-domain default.com'
+  - cleanup_command:
+      cmd:
+        - ctfcred
+        - --clean
+
+
+tests:
+  - title: Validate YAML
+    description: >
+      'Checks the ctfcred.yml file for the expected entries.'
+
+    command:
+      - cat
+      - /home/pentester/.ctfcred.yml
+
+    validators:
+      - error: False
+      - count:
+          values:
+            - 'alias: null'
+            - 'alias: helmut'
+            - 'custom_note: true'
+            - 'domain: null'
+            - 'domain: example.com'
+            - 'domain: example.org'
+            - 'domain: default.com'
+            - 'domain: thisisreallyalongdomainname.com'
+            - 'otp: null'
+            - 'username: timmy'
+            - 'username: null'
+          counts:
+            - 5
+            - 1
+            - 6
+            - 2
+            - 2
+            - 1
+            - 1
+            - 1
+            - 6
+            - 3
+            - 1
+
+
+  - title: Validate User Export
+    description: >
+      'Checks whether the user export gives the expected result'
+
+    command:
+      - ctfcred
+      - --users
+
+    validators:
+      - error: False
+      - line_count:
+          count: 3
+      - count:
+          values:
+            - jane
+            - timmy
+            - tony
+          counts:
+            - 1
+            - 1
+            - 1
+
+
+  - title: Validate Domain Export
+    description: >
+      'Checks whether the domain export gives the expected result'
+
+    command:
+      - ctfcred
+      - --domains
+
+    validators:
+      - error: False
+      - line_count:
+          count: 4
+      - count:
+          values:
+            - default.com
+            - example.com
+            - example.org
+            - thisisreallyalongdomainname.com
+          counts:
+            - 1
+            - 1
+            - 1
+            - 1
+
+
+  - title: Validate URL Export
+    description: >
+      'Checks whether the URL export gives the expected result'
+
+    command:
+      - ctfcred
+      - --urls
+
+    validators:
+      - error: False
+      - line_count:
+          count: 0
+
+
+  - title: Validate user-pass Export
+    description: >
+      'Checks whether the user-pass export gives the expected result'
+
+    command:
+      - ctfcred
+      - --users-pass
+
+    validators:
+      - error: False
+      - line_count:
+          count: 2
+      - count:
+          values:
+            - 'timmy:password123'
+            - 'tony:myPassword'
+          counts:
+            - 1
+            - 1
+
+
+  - title: Validate user-pass-domain Export
+    description: >
+      'Checks whether the user-pass-domain export gives the expected result'
+
+    command:
+      - ctfcred
+      - --users-pass-domain
+
+    validators:
+      - error: False
+      - line_count:
+          count: 4
+      - count:
+          values:
+            - 'default.com/timmy:password123'
+            - 'example.com/timmy:password123'
+            - 'example.org/timmy:password123'
+            - 'thisisreallyalongdomainname.com/tony:myPassword'
+          counts:
+            - 1
+            - 1
+            - 1
+            - 1
+
+
+  - title: Validate user-pass-domain Export (Mix)
+    description: >
+      'Checks whether the mixed user-pass-domain export gives the expected result'
+
+    command:
+      - ctfcred
+      - --users-pass-domain
+      - --mix
+
+    validators:
+      - error: False
+      - line_count:
+          count: 15
+      - count:
+          values:
+            - 'default.com/jane:myPassword'
+            - 'default.com/jane:password123'
+            - 'default.com/jane:s3cr3t'
+            - 'default.com/timmy:myPassword'
+            - 'default.com/timmy:password123'
+            - 'default.com/timmy:s3cr3t'
+            - 'example.com/timmy:myPassword'
+            - 'example.com/timmy:password123'
+            - 'example.com/timmy:s3cr3t'
+            - 'example.org/timmy:myPassword'
+            - 'example.org/timmy:password123'
+            - 'example.org/timmy:s3cr3t'
+            - 'thisisreallyalongdomainname.com/tony:myPassword'
+            - 'thisisreallyalongdomainname.com/tony:password123'
+            - 'thisisreallyalongdomainname.com/tony:s3cr3t'
+          counts:
+            - 1
+            - 1
+            - 1
+            - 1
+            - 1
+            - 1
+            - 1
+            - 1
+            - 1
+            - 1
+            - 1
+            - 1
+            - 1
+            - 1
+            - 1
