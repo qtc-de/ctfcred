@@ -121,28 +121,29 @@ class Config:
         with open(Config.credential_file, 'w') as file:
             yaml.dump(yml, file, default_flow_style=False)
 
-    def key_bindings() -> str:
+    def key_bindings(width: int) -> str:
         '''
         Returns a formatted string of the currently defined keybindings. This is used within
-        the helptext for the tool.
+        the helptext for the tool. The width parameter controlls the padding of the argument
+        descriptions.
 
         Parameters:
-            None
+            width       padding between key binding and description
 
         Returns:
             str         formatted list of Keybindings
         '''
         return_str = 'key bindings:\n'
 
-        return_str += f'  {Config.copy_username}\t\tCopy Username\n'
-        return_str += f'  {Config.copy_password}\t\tCopy Password\n'
-        return_str += f'  {Config.copy_otp}\t\tCopy OTP Value\n'
-        return_str += f'  {Config.copy_url}\t\tCopy URL Value\n'
-        return_str += f'  {Config.open_url}\t\tOpen URL\n'
-        return_str += f'  {Config.copy_domain}\t\tCopy Domain\n'
-        return_str += f'  {Config.copy_user_domain}\t\tCopy User with Domain\n'
-        return_str += f'  {Config.delete_credential}\t\tDelete Credential\n'
-        return_str += f'  {Config.move_up}\t\tMove Credential one Up\n'
-        return_str += f'  {Config.move_down}\t\tMove Credential one Down\n\n'
+        return_str += f'  {Config.copy_username.ljust(width)}Copy Username\n'
+        return_str += f'  {Config.copy_password.ljust(width)}Copy Password\n'
+        return_str += f'  {Config.copy_otp.ljust(width)}Copy OTP Value\n'
+        return_str += f'  {Config.copy_url.ljust(width)}Copy URL Value\n'
+        return_str += f'  {Config.open_url.ljust(width)}Open URL\n'
+        return_str += f'  {Config.copy_domain.ljust(width)}Copy Domain\n'
+        return_str += f'  {Config.copy_user_domain.ljust(width)}Copy User with Domain\n'
+        return_str += f'  {Config.delete_credential.ljust(width)}Delete Credential\n'
+        return_str += f'  {Config.move_up.ljust(width)}Move Credential one Up\n'
+        return_str += f'  {Config.move_down.ljust(width)}Move Credential one Down\n\n'
 
         return return_str
