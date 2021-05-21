@@ -8,6 +8,10 @@ them in this way is not really fast. *ctfcred* is designed to allow fast, organi
 simple access to *CTF* credentials. Credentials are stored as plaintext in a ``.yml``
 file and are accesses via *rofi*.
 
+![](https://github.com/qtc-de/ctfcred/workflows/main%20Python%20CI/badge.svg?branch=main)
+![](https://github.com/qtc-de/ctfcred/workflows/develop%20Python%20CI/badge.svg?branch=develop)
+![example](https://tneitzel.eu/73201a92878c0aba7c3419b7403ab604/ctfcred-plain.png)
+
 **Do not use this tool to store real sensitive data!**
 
 
