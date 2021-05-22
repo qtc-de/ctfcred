@@ -2,6 +2,7 @@
 
 import pytest
 import ctfcred
+import pyperclip
 
 
 @pytest.fixture
@@ -38,3 +39,35 @@ def cred_list():
     cred4 = ctfcred.Credential('', 'lonelypassword', None, None, None, None, 0, None)
 
     return [cred1, cred2, cred3, cred4]
+
+
+def pytest_addoption(parser):
+    '''
+    Not sure how to run clipboard tests in a CI properly. Until a better solution
+    is available, we add an option for running in CI mode and mock clipboard calls
+    in this case.
+    '''
+    parser.addoption("--ci-mode", action="store_true")
+
+
+def pytest_collection_modifyitems(config, items):
+    '''
+    Create mock functions for clipboard usages if in ci-mode.
+    '''
+    if not config.getoption('--ci-mode'):
+        return
+
+    def mock_copy(content):
+        '''
+        Mock function for copy calls.
+        '''
+        pyperclip.current_clipboard_content = content
+
+    def mock_paste():
+        '''
+        Mock function for paste calls.
+        '''
+        return pyperclip.current_clipboard_content
+
+    pyperclip.copy = mock_copy
+    pyperclip.paste = mock_paste
