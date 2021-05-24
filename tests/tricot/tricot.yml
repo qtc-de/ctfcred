@@ -5,5 +5,9 @@ tester:
   description: >
     'Launches some simple tests for ctfcred'
 
+variables:
+  HOME: $env
+  cred-file: ${HOME}/.ctfcred.yml
+
 testers:
   - ./testers/*

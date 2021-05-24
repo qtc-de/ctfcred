@@ -30,7 +30,7 @@ tests:
 
     command:
       - cat
-      - /home/pentester/.ctfcred.yml
+      - ${cred-file}
 
     validators:
       - error: False
