@@ -8,15 +8,14 @@ tester:
 plugins:
   - os_command:
       cmd:
-        - /bin/sh
-        - -c
-        - 'ctfcred timmy password123 "This is timmy" --url https://example.com &&
-           ctfcred timmy password123 "This is timmy"  --url https://example.org &&
-           ctfcred timmy password123 "This is timmy" &&
-           ctfcred tony myPassword "This is tony" --url http://thisisreallyalongdomainname.com &&
-           ctfcred jane "" "No password" --alias helmut &&
-           ctfcred "" s3cr3t "Found in config file" --url https://example.com &&
-           ctfcred --default-url https://default.com'
+        - ctfcred timmy password123 "This is timmy" --url https://example.com &&
+        - ctfcred timmy password123 "This is timmy"  --url https://example.org &&
+        - ctfcred timmy password123 "This is timmy" &&
+        - ctfcred tony myPassword "This is tony" --url http://thisisreallyalongdomainname.com &&
+        - ctfcred jane "" "No password" --alias helmut &&
+        - ctfcred "" s3cr3t "Found in config file" --url https://example.com &&
+        - ctfcred --default-url https://default.com
+      shell: True
   - cleanup_command:
       cmd:
         - ctfcred
