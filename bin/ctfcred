@@ -14,9 +14,9 @@ width = min(130, shutil.get_terminal_size().columns - 2)
 formatter_class = lambda prog: argparse.RawDescriptionHelpFormatter(prog, max_help_position=width)
 fr = argparse.FileType('r')
 
-parser = argparse.ArgumentParser(description='''Simple credential manager for CTFs. Credentials are stored as plain text
-within the file system. This credential manager should not be used for
-real sensitive data. Do not use it as your password manager.\n\n''' +
+parser = argparse.ArgumentParser(description='ctfcred v1.0.0 - Simple credential manager for CTFs. Credentials are stored as' +
+'plain text within the file system. This credential manager should not be used for' +
+'real sensitive data. Do not use it as your password manager.\n\n' +
 ctfcred.Config.key_bindings(32), formatter_class=formatter_class)
 
 credential_props = parser.add_argument_group('credential properties')

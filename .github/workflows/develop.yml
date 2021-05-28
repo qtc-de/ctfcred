@@ -52,4 +52,6 @@ jobs:
 
     - name: Test with tricot
       run: |
-        tricot tests/tricot/tricot.yml
+        tricot -v tests/tricot/tricot.yml
+      env:
+        HOME: /tmp/
