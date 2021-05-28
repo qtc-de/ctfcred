@@ -19,6 +19,7 @@ plugins:
   - cleanup_command:
       cmd:
         - ctfcred
+        - --no-check
         - --clean
 
 
@@ -66,6 +67,7 @@ tests:
 
     command:
       - ctfcred
+      - --no-check
       - --users
 
     validators:
@@ -89,6 +91,7 @@ tests:
 
     command:
       - ctfcred
+      - --no-check
       - --domains
 
     validators:
@@ -114,6 +117,7 @@ tests:
 
     command:
       - ctfcred
+      - --no-check
       - --urls
 
     validators:
@@ -128,6 +132,7 @@ tests:
 
     command:
       - ctfcred
+      - --no-check
       - --users-pass
 
     validators:
@@ -149,6 +154,7 @@ tests:
 
     command:
       - ctfcred
+      - --no-check
       - --users-pass-domain
 
     validators:
@@ -174,6 +180,7 @@ tests:
 
     command:
       - ctfcred
+      - --no-check
       - --users-pass-domain
       - --mix
 
