@@ -35,6 +35,12 @@ file and are accesses via *rofi*.
 for your current user profile:
 
 ```console
+$ pip3 install ctfcred
+```
+
+You can also build *ctfcred* from source by running the following commands:
+
+```console
 $ git clone https://github.com/qtc-de/ctfcred
 $ cd ctfcred
 $ python3 setup.py sdist
