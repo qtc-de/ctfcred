@@ -162,59 +162,60 @@ def main():
     Returns:
         None
     '''
-    ctfcred.Config.check_external_dependencies()
     args = parser.parse_args()
 
-    if args.default_url or args.default_domain:
-        set_defaults(args)
-        sys.exit(0)
-
-    if args.clean:
-        ctfcred.Config.write_cred_file({})
-        sys.exit(0)
-
-    if args.e_user or args.e_pass or args.e_domain or args.e_url or args.e_udomain or args.e_upass or args.e_upassd:
-        handle_export(args)
-        sys.exit(0)
-
-    if args.ri:
-        credentials = ctfcred.Credential.filter_imports()
-        ctfcred.Credential.to_file(credentials)
-        sys.exit(0)
-
-    if args.i_user or args.i_pass or args.i_udomain or args.i_upass or args.i_upassd:
-        handle_import(args)
-        sys.exit(0)
-
-    credentials = ctfcred.Credential.from_file()
-
-    if args.update:
-
-        code, selected = ctfcred.Launcher.start_rofi(credentials, 'Update Credential')
-
-        password = args.gen or args.password
-        selected.update(args.username, password, args.note, args.url, args.otp, args.domain, args.alias)
-        ctfcred.Credential.to_file(credentials)
-
-    elif args.clone:
-
-        code, selected = ctfcred.Launcher.start_rofi(credentials, 'Clone Credential')
-
-        password = args.gen or args.password
-        cloned = selected.clone(args.username, password, args.note, args.url, args.otp, args.domain, args.alias)
-        credentials.add(cloned)
-
-        ctfcred.Credential.to_file(credentials)
-
-    elif args.username is not None:
-
-        password = args.gen or args.password
-        cred = ctfcred.Credential(args.username, password, args.note, args.url, args.otp, args.domain, 0, alias=args.alias)
-        credentials.add(cred)
-        ctfcred.Credential.to_file(credentials)
-        sys.exit(0)
-
     try:
+        ctfcred.Config.check_external_dependencies()
+
+        if args.default_url or args.default_domain:
+            set_defaults(args)
+            sys.exit(0)
+
+        if args.clean:
+            ctfcred.Config.write_cred_file({})
+            sys.exit(0)
+
+        if args.e_user or args.e_pass or args.e_domain or args.e_url or args.e_udomain or args.e_upass or args.e_upassd:
+            handle_export(args)
+            sys.exit(0)
+
+        if args.ri:
+            credentials = ctfcred.Credential.filter_imports()
+            ctfcred.Credential.to_file(credentials)
+            sys.exit(0)
+
+        if args.i_user or args.i_pass or args.i_udomain or args.i_upass or args.i_upassd:
+            handle_import(args)
+            sys.exit(0)
+
+        credentials = ctfcred.Credential.from_file()
+
+        if args.update:
+
+            code, selected = ctfcred.Launcher.start_rofi(credentials, 'Update Credential')
+
+            password = args.gen or args.password
+            selected.update(args.username, password, args.note, args.url, args.otp, args.domain, args.alias)
+            ctfcred.Credential.to_file(credentials)
+
+        elif args.clone:
+
+            code, selected = ctfcred.Launcher.start_rofi(credentials, 'Clone Credential')
+
+            password = args.gen or args.password
+            cloned = selected.clone(args.username, password, args.note, args.url, args.otp, args.domain, args.alias)
+            credentials.add(cloned)
+
+            ctfcred.Credential.to_file(credentials)
+
+        elif args.username is not None:
+
+            password = args.gen or args.password
+            cred = ctfcred.Credential(args.username, password, args.note, args.url, args.otp, args.domain, 0, alias=args.alias)
+            credentials.add(cred)
+            ctfcred.Credential.to_file(credentials)
+            sys.exit(0)
+
         credentials = ctfcred.Credential.from_file()
         code, selected = ctfcred.Launcher.start_rofi(credentials)
         ctfcred.Launcher.handle_exit(code, selected, credentials)
@@ -223,6 +224,10 @@ def main():
     except ctfcred.credential.MissingCredentialAttribute as e:
         print('[-] Error: Malformed credential file.')
         print(f'[-]\t The {e} attribute is missing on one credential.')
+
+    except ctfcred.config.DependencyException as e:
+        print('[-] Error: Missing dependency.')
+        print(f'[-]\t {e}')
 
     except Exception as e:
 
