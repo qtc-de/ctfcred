@@ -8,10 +8,10 @@ tester:
 plugins:
   - os_command:
       cmd:
-        - ctfcred timmy password123 "This is timmy" --otp thisisanotpsecret &&
-        - ctfcred timmy password123 "This is timmy" --otp thisisanotpsecret --alias test &&
-        - ctfcred timmy password123 "This is timmy" &&
-        - ctfcred tony  password123 "This is tony" --otp thisistoniesotpsecret
+        - ctfcred --no-check timmy password123 "This is timmy" --otp thisisanotpsecret &&
+        - ctfcred --no-check timmy password123 "This is timmy" --otp thisisanotpsecret --alias test &&
+        - ctfcred --no-check timmy password123 "This is timmy" &&
+        - ctfcred --no-check tony  password123 "This is tony" --otp thisistoniesotpsecret
       shell: True
   - cleanup_command:
       cmd:

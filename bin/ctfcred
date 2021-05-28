@@ -51,6 +51,7 @@ parser.add_argument('--debug', action='store_true', help='disable exception hand
 parser.add_argument('--default-domain', dest='default_domain', metavar='domain', help='set the default domain to use')
 parser.add_argument('--default-url', dest='default_url', metavar='url', help='set the default url to use')
 parser.add_argument('--gen', action='store_const', const=secrets.token_urlsafe(12), help='automatically generae a password')
+parser.add_argument('--no-check', dest='no_check', action='store_true', help='skip dependency check')
 parser.add_argument('--update', action='store_true', help='update a user instead of creating one')
 
 parser.add_argument('username', nargs='?', help='username to store')
@@ -165,7 +166,8 @@ def main():
     args = parser.parse_args()
 
     try:
-        ctfcred.Config.check_external_dependencies()
+        if not args.no_check:
+            ctfcred.Config.check_external_dependencies()
 
         if args.default_url or args.default_domain:
             set_defaults(args)

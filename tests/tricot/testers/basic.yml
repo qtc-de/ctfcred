@@ -9,14 +9,14 @@ tester:
 plugins:
   - os_command:
       cmd:
-        - ctfcred timmy password123 "This is timmy" &&
-        - ctfcred timmy password123 "This is timmy" &&
-        - ctfcred timmy password123 "This is timmy" &&
-        - ctfcred timmy password1234 &&
-        - ctfcred timmy password123 "This is timmy3" &&
-        - ctfcred tony myPassword "This is tony" &&
-        - ctfcred jane "" "No password" &&
-        - ctfcred "" s3cr3t "Found in config file"
+        - ctfcred --no-check timmy password123 "This is timmy" &&
+        - ctfcred --no-check timmy password123 "This is timmy" &&
+        - ctfcred --no-check timmy password123 "This is timmy" &&
+        - ctfcred --no-check timmy password1234 &&
+        - ctfcred --no-check timmy password123 "This is timmy3" &&
+        - ctfcred --no-check tony myPassword "This is tony" &&
+        - ctfcred --no-check jane "" "No password" &&
+        - ctfcred --no-check "" s3cr3t "Found in config file"
       shell: True
   - cleanup_command:
       cmd:

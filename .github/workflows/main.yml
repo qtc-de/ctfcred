@@ -52,8 +52,6 @@ jobs:
 
     - name: Test with tricot
       run: |
-        # rofi is required, but not used during the test. We need to fake a rofi installation.
-        ln -s /bin/ls /bin/rofi
         tricot -v tests/tricot/tricot.yml
       env:
         HOME: /tmp/

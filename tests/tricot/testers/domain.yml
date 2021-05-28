@@ -8,13 +8,13 @@ tester:
 plugins:
   - os_command:
       cmd:
-        - ctfcred timmy password123 "This is timmy" --domain example.com &&
-        - ctfcred timmy password123 "This is timmy"  --domain example.org &&
-        - ctfcred timmy password123 "This is timmy" &&
-        - ctfcred tony myPassword "This is tony" --domain thisisreallyalongdomainname.com &&
-        - ctfcred jane "" "No password" --alias helmut &&
-        - ctfcred "" s3cr3t "Found in config file" --domain example.com &&
-        - ctfcred --default-domain default.com
+        - ctfcred --no-check timmy password123 "This is timmy" --domain example.com &&
+        - ctfcred --no-check timmy password123 "This is timmy"  --domain example.org &&
+        - ctfcred --no-check timmy password123 "This is timmy" &&
+        - ctfcred --no-check tony myPassword "This is tony" --domain thisisreallyalongdomainname.com &&
+        - ctfcred --no-check jane "" "No password" --alias helmut &&
+        - ctfcred --no-check "" s3cr3t "Found in config file" --domain example.com &&
+        - ctfcred --no-check --default-domain default.com
       shell: True
   - cleanup_command:
       cmd:
